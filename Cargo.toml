@@ -1,0 +1,6 @@
+[package]
+name = "price-split"
+version = "0.1.0"
+authors = ["Alexander Tchitchigin <sad.ronin@gmail.com>"]
+
+[dependencies]
