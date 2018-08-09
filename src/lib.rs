@@ -1,3 +1,7 @@
+#![feature(test)]
+extern crate test;
+extern crate rand;
+
 pub mod splitter {
   pub type Price = i32;
   pub type Size  = u32;
@@ -163,5 +167,33 @@ mod tests {
     let mut queue: Queue = vec![(10, vec![(2, 0)])];
     insert(&mut queue, 10, 3, 20);
     assert_eq!(queue, vec![(10, vec![(2, 0), (3, 20)])]);
+  }
+
+  use test::Bencher;
+  use rand::prelude::*;
+
+  #[bench]
+  fn bench_split(b: &mut Bencher) {
+    let mut queue: Queue = vec![];
+    let mut total_size = 0;
+    let mut rng = thread_rng();
+    let nprices = rng.gen_range::<u32>(100, 1000);
+
+    for _ in 0 .. nprices {
+      let price: Price = rng.gen();
+      let npairs: u32  = rng.gen_range(10, 100);
+      for _ in 0 .. npairs {
+        let size: Size = rng.gen();
+        total_size += size;
+        insert(&mut queue, price, size, 1234);
+      }
+    }
+
+    let s = total_size / 2;
+    b.iter(|| {
+      let mut q = queue.clone();
+      let     p = rng.gen();  // on average this should split prices roughly in equal halfs, like in qsort
+      split(&mut q, p, s);
+    });
   }
 }
