@@ -31,6 +31,10 @@ pub mod splitter {
       let ind: usize = rng.gen_range(0, self.0.len());
       self.0[ind].1.pop();
     }
+
+    pub fn append(&mut self, rest: &mut Queue) {
+      self.0.append(&mut rest.0);
+    }
   }
 
   pub trait Split {

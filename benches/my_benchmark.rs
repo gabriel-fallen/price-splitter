@@ -108,6 +108,7 @@ fn bench_split_n(c: &mut Criterion) {
   let     nprices = 100;
   let     npairs  = 70;
   let     queue   = RefCell::new(Queue::new(vec![]));
+  let     res     = RefCell::new(Queue::new(vec![]));
   let mut nelems  = 0;
 
   for _ in 0 .. nprices {
@@ -123,11 +124,7 @@ fn bench_split_n(c: &mut Criterion) {
       let mut size_limit = 0;
 
       // restore original number of elements
-      for _ in 0 .. nelems {
-        let price: Price = rng.gen();
-        let size: Size = rng.gen();
-        queue.borrow_mut().insert(price, size, 1234);
-      }
+      queue.borrow_mut().append(&mut res.borrow_mut());
 
       nelems = 0;
       let q = queue.borrow();
@@ -144,8 +141,7 @@ fn bench_split_n(c: &mut Criterion) {
       size_limit
     }, |size_limit| {
       let mut q = queue.borrow_mut();
-      let     r = q.split(std::i32::MAX, size_limit);
-      *q = r;
+      *res.borrow_mut() = q.split(std::i32::MAX, size_limit);
     })
   }, &[1, 20, 100, 500]);
 }
